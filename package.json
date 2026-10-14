@@ -1,13 +1,15 @@
 {
-  "name": "react-example",
+  "name": "taskflow-xplore",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "bun server.ts",
+    "dev:node": "tsx server.ts",
     "build": "vite build",
-    "start": "bun server.ts",
-    "seed": "bun server/scripts/seed.ts",
+    "start": "tsx server.ts",
+    "start:bun": "bun server.ts",
+    "seed": "tsx server/scripts/seed.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "react-dom": "^19.0.1",
     "react-hook-form": "^7.90.0",
     "react-router-dom": "^7.18.4",
+    "tsx": "^4.21.0",
     "vite": "^8.3.0"
   },
   "devDependencies": {
