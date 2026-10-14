@@ -1,0 +1,6 @@
+{
+  "name": "TaskFlow — Xplore Intellects",
+  "description": "Production-grade MERN Stack Task Management System featuring role-based access control for Admins and Employees, task delegation, live statistics, automated email notifications, and comprehensive audit logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
