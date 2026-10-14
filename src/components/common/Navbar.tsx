@@ -6,7 +6,10 @@ import {
   User as UserIcon,
   LogOut,
   ChevronDown,
-  Layers,
+  Plus,
+  ChevronRight,
+  Shield,
+  Briefcase,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.tsx';
 import { NotificationDrawer } from './NotificationDrawer.tsx';
@@ -22,17 +25,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [notificationDrawerOpen, setNotificationDrawerOpen] = useState<boolean>(false);
 
-  // Compute breadcrumb title based on path
+  // Compute natural human breadcrumb title
   const getBreadcrumbs = () => {
     const path = location.pathname;
-    if (path.includes('/admin/dashboard')) return 'Admin Overview';
-    if (path.includes('/admin/employees')) return 'Employee Directory';
-    if (path.includes('/admin/tasks/create')) return 'Task Assignment Engine';
-    if (path.includes('/admin/tasks')) return 'Enterprise Task Directory';
-    if (path.includes('/employee/dashboard')) return 'Employee Overview';
-    if (path.includes('/employee/tasks')) return 'My Assigned Tasks';
-    if (path.includes('/profile')) return 'Account Settings';
-    return 'Portal';
+    if (path.includes('/admin/dashboard')) return 'Overview';
+    if (path.includes('/admin/employees')) return 'Team Members';
+    if (path.includes('/admin/tasks/create')) return 'Create Task';
+    if (path.includes('/admin/tasks')) return 'All Tasks';
+    if (path.includes('/employee/dashboard')) return 'Overview';
+    if (path.includes('/employee/tasks')) return 'My Tasks';
+    if (path.includes('/profile')) return 'Settings';
+    return 'Dashboard';
   };
 
   const handleLogout = async () => {
@@ -42,48 +45,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200">
+      <header className="sticky top-0 z-30 flex items-center justify-between px-5 sm:px-8 py-3 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
         {/* Left: Mobile Toggle & Breadcrumb */}
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSidebar}
             aria-label="Toggle navigation menu"
-            className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+            className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-2 text-xs">
-            <span className="font-semibold text-slate-800">{getBreadcrumbs()}</span>
-            <span className="text-slate-300">/</span>
-            <span className="text-slate-500 hidden sm:inline">TaskFlow</span>
+            <span className="text-slate-400 font-medium hidden sm:inline">TaskFlow</span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-300 hidden sm:inline" />
+            <span className="font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-xs">
+              {getBreadcrumbs()}
+            </span>
           </div>
         </div>
 
         {/* Right: Actions, Notifications & Profile Dropdown */}
-        <div className="flex items-center gap-4">
-          {/* Quick Demo Switcher helper */}
-          <div className="hidden lg:flex items-center gap-2 text-[11px] text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded">
-            <span>Role:</span>
-            <span className="font-semibold text-slate-800">{user?.role}</span>
-            <span className="text-slate-300">|</span>
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Admin Primary Action: Create Task shortcut */}
+          {isAdmin && (
             <Link
-              to={isAdmin ? '/login/employee' : '/login/admin'}
-              className="text-indigo-600 hover:underline font-medium"
+              to="/admin/tasks/create"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white text-xs font-medium shadow-xs transition-all"
             >
-              Switch Portal
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Task</span>
             </Link>
-          </div>
+          )}
 
-          {/* Admin Notification Center Trigger */}
+          {/* Admin Email Notification Bell */}
           {isAdmin && (
             <button
               onClick={() => setNotificationDrawerOpen(true)}
               aria-label="View system notifications"
-              className="relative p-2 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-              title="Audit Email Notifications"
+              className="relative p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100/80 transition-colors"
+              title="Audit Email Deliveries"
             >
               <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white" />
             </button>
           )}
 
@@ -91,14 +95,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 p-1.5 rounded-md hover:bg-slate-50 text-slate-700 transition-colors focus:outline-none"
+              className="flex items-center gap-2 p-1 pl-1.5 rounded-lg hover:bg-slate-100/70 border border-transparent hover:border-slate-200 text-slate-700 transition-all focus:outline-none"
             >
-              <div className="w-7 h-7 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center text-xs font-bold">
+              <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold shadow-2xs">
                 {user?.name?.charAt(0) || 'U'}
               </div>
-              <span className="text-xs font-semibold text-slate-800 hidden sm:inline">
-                {user?.name}
-              </span>
+              <div className="text-left hidden md:block">
+                <span className="text-xs font-semibold text-slate-800 block leading-tight">
+                  {user?.name}
+                </span>
+                <span className="text-[10px] text-slate-400 font-medium block leading-tight">
+                  {isAdmin ? 'Admin' : user?.department || 'Employee'}
+                </span>
+              </div>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
 
@@ -108,25 +117,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
                   className="fixed inset-0 z-40"
                   onClick={() => setDropdownOpen(false)}
                 />
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-1.5 z-50 text-xs">
-                  <div className="px-4 py-2 border-b border-slate-100">
+                <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-slate-200/90 py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 py-2.5 border-b border-slate-100">
                     <p className="font-semibold text-slate-900 truncate">{user?.name}</p>
                     <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
-                    <p className="text-[10px] text-indigo-600 font-medium mt-0.5 uppercase tracking-wider">
-                      {user?.department} &bull; {user?.role}
-                    </p>
+                    <div className="mt-1.5 flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">
+                        {isAdmin ? <Shield className="w-3 h-3 text-indigo-600" /> : <Briefcase className="w-3 h-3 text-emerald-600" />}
+                        {user?.role}
+                      </span>
+                      <span className="text-[10px] text-slate-400">&bull;</span>
+                      <span className="text-[10px] text-slate-500 truncate">{user?.department}</span>
+                    </div>
                   </div>
 
-                  <Link
-                    to="/profile"
-                    onClick={() => setDropdownOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    <UserIcon className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Account Profile</span>
-                  </Link>
+                  <div className="py-1">
+                    <Link
+                      to="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    >
+                      <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Account Settings</span>
+                    </Link>
 
-                  <div className="border-t border-slate-100 my-1" />
+                    <Link
+                      to={isAdmin ? '/login/employee' : '/login/admin'}
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    >
+                      <span className="w-3.5 h-3.5 text-slate-400 font-mono text-[11px] text-center">⇄</span>
+                      <span>{isAdmin ? 'Switch to Employee Portal' : 'Switch to Admin Console'}</span>
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-1" />
 
                   <button
                     onClick={() => {

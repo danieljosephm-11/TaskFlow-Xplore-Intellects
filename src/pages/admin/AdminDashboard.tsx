@@ -4,11 +4,10 @@ import {
   Users,
   CheckSquare,
   Clock,
-  AlertTriangle,
+  AlertCircle,
   CheckCircle2,
-  TrendingUp,
+  Plus,
   ArrowRight,
-  PlusCircle,
   Activity,
   Calendar,
 } from 'lucide-react';
@@ -16,6 +15,7 @@ import api from '../../services/api.ts';
 import { StatusBadge, PriorityBadge } from '../../components/common/Badge.tsx';
 import { TaskDetailsModal } from '../../components/common/TaskDetailsModal.tsx';
 import { Task } from '../../types/client.ts';
+import { useAuth } from '../../context/AuthContext.tsx';
 
 interface AdminDashboardData {
   overview: {
@@ -46,6 +46,7 @@ interface AdminDashboardData {
 }
 
 export const AdminDashboard: React.FC = () => {
+  const { user } = useAuth();
   const [data, setData] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -74,12 +75,12 @@ export const AdminDashboard: React.FC = () => {
         <div className="h-8 bg-slate-200 rounded w-1/4"></div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-slate-200 rounded-lg"></div>
+            <div key={i} className="h-28 bg-white border border-slate-200 rounded-xl"></div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-72 bg-slate-200 rounded-lg"></div>
-          <div className="h-72 bg-slate-200 rounded-lg"></div>
+          <div className="lg:col-span-2 h-72 bg-white border border-slate-200 rounded-xl"></div>
+          <div className="h-72 bg-white border border-slate-200 rounded-xl"></div>
         </div>
       </div>
     );
@@ -96,108 +97,92 @@ export const AdminDashboard: React.FC = () => {
     overdue: 0,
   };
 
+  const completionPct =
+    overview.totalTasks > 0
+      ? Math.round((overview.completed / overview.totalTasks) * 100)
+      : 0;
+
   const statCards = [
     {
-      label: 'Total Workforce',
-      value: overview.totalEmployees,
-      subtext: 'Active enterprise employees',
-      icon: Users,
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50 border-indigo-100',
-      link: '/admin/employees',
-    },
-    {
-      label: 'All Active Tasks',
+      label: 'All Tasks',
       value: overview.totalTasks,
-      subtext: `${overview.completed} tasks fulfilled`,
+      subtext: `${overview.completed} completed so far`,
       icon: CheckSquare,
-      color: 'text-slate-800',
-      bgColor: 'bg-slate-50 border-slate-200',
+      iconBg: 'bg-slate-100 text-slate-700',
       link: '/admin/tasks',
     },
     {
-      label: 'In Progress / Pending',
+      label: 'Active & In Progress',
       value: overview.inProgress + overview.pending,
       subtext: `${overview.inProgress} in progress · ${overview.pending} pending`,
       icon: Clock,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50/60 border-amber-200',
+      iconBg: 'bg-blue-50 text-blue-600',
       link: '/admin/tasks?status=IN_PROGRESS',
     },
     {
       label: 'Completed Tasks',
       value: overview.completed,
-      subtext: `${overview.totalTasks > 0 ? Math.round((overview.completed / overview.totalTasks) * 100) : 0}% team throughput`,
+      subtext: `${completionPct}% overall completion rate`,
       icon: CheckCircle2,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50 border-emerald-200',
+      iconBg: 'bg-emerald-50 text-emerald-600',
       link: '/admin/tasks?status=COMPLETED',
     },
     {
-      label: 'High Priority Alert',
+      label: 'High Priority',
       value: overview.highPriority,
-      subtext: 'Requires immediate monitoring',
-      icon: AlertTriangle,
-      color: 'text-rose-600',
-      bgColor: 'bg-rose-50 border-rose-200',
+      subtext: overview.overdue > 0 ? `${overview.overdue} tasks past due date` : 'Requires prompt review',
+      icon: AlertCircle,
+      iconBg: 'bg-rose-50 text-rose-600',
       link: '/admin/tasks?priority=HIGH',
-    },
-    {
-      label: 'Not Started',
-      value: overview.notStarted,
-      subtext: 'Queued for development',
-      icon: Activity,
-      color: 'text-slate-600',
-      bgColor: 'bg-slate-50 border-slate-200',
-      link: '/admin/tasks?status=NOT_STARTED',
-    },
-    {
-      label: 'Overdue Deadlines',
-      value: overview.overdue,
-      subtext: 'Past agreed target delivery',
-      icon: Calendar,
-      color: 'text-rose-700',
-      bgColor: 'bg-rose-100/50 border-rose-300',
-      link: '/admin/tasks',
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Top Banner & Quick Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      {/* Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            Operations & Workflow Dashboard
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Real-time status updates, team velocity metrics, and automated notification dispatches.
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Overview
+            </h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">
+              Live
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Welcome back, {user?.name?.split(' ')[0] || 'Admin'}. Here is the current progress across your team.
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+
+        <div className="flex items-center gap-2.5 shrink-0">
           <Link
             to="/admin/tasks/create"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.98] rounded-lg shadow-xs transition-all"
           >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>Create & Assign Task</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Task</span>
           </Link>
         </div>
       </div>
 
-      {/* Statistics Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+      {/* High-Impact Stat Cards Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card, idx) => {
           const Icon = card.icon;
           return (
             <Link
               key={idx}
               to={card.link}
-              className={`p-4 rounded-xl border ${card.bgColor} hover:shadow-xs transition-all flex flex-col justify-between`}
+              className="group p-4 bg-white rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between"
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-600 truncate">{card.label}</span>
-                <Icon className={`w-4 h-4 ${card.color}`} />
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-medium text-slate-500 group-hover:text-slate-800 transition-colors">
+                  {card.label}
+                </span>
+                <div className={`w-8 h-8 rounded-lg ${card.iconBg} flex items-center justify-center shrink-0`}>
+                  <Icon className="w-4 h-4" />
+                </div>
               </div>
               <div>
                 <p className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
@@ -210,33 +195,30 @@ export const AdminDashboard: React.FC = () => {
         })}
       </div>
 
-      {/* Analytics Charts & Summaries */}
+      {/* Middle Row: Status Progress & Team Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Status & Priority Visual Distribution */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-6">
+        {/* Status Distribution */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Task Status & Priority Distribution</h2>
-              <p className="text-xs text-slate-500">Live breakdown of work order lifecycle states</p>
+              <h2 className="text-sm font-semibold text-slate-900">Task Lifecycle Progress</h2>
+              <p className="text-xs text-slate-500">Breakdown of tasks by active status and priority</p>
             </div>
-            <span className="text-xs font-mono font-medium text-slate-400">
-              Total: {overview.totalTasks}
-            </span>
+            <div className="text-xs font-medium text-slate-600 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-200/60">
+              Total: <span className="font-bold text-slate-900">{overview.totalTasks}</span>
+            </div>
           </div>
 
-          {/* Status Progress Bar & Breakdown */}
+          {/* Segmented Progress Bar */}
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-700">Lifecycle Progress</span>
-              <span className="text-slate-500 font-mono tabular-nums">
-                {overview.totalTasks > 0
-                  ? `${Math.round((overview.completed / overview.totalTasks) * 100)}% Fulfilled`
-                  : '0% Fulfilled'}
+              <span className="text-xs font-medium text-slate-600">Completion Velocity</span>
+              <span className="text-slate-900 font-semibold tabular-nums">
+                {completionPct}% Complete
               </span>
             </div>
 
-            {/* Segmented Bar */}
-            <div className="w-full h-3 rounded-full bg-slate-100 flex overflow-hidden">
+            <div className="w-full h-2.5 rounded-full bg-slate-100 flex overflow-hidden">
               {overview.totalTasks > 0 && (
                 <>
                   <div
@@ -263,37 +245,34 @@ export const AdminDashboard: React.FC = () => {
               )}
             </div>
 
-            {/* Status Grid Counters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+            {/* Status Breakdown Chips */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 text-xs">
               {data?.distribution.byStatus.map((s) => (
-                <div key={s.key} className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/50">
+                <div key={s.key} className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/60">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                    <span className="text-slate-600 truncate">{s.status}</span>
+                    <span className="text-slate-600 text-xs font-medium truncate">{s.status}</span>
                   </div>
-                  <p className="text-base font-bold text-slate-900 tabular-nums">{s.count}</p>
+                  <p className="text-sm font-bold text-slate-900 tabular-nums">{s.count}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Priority Breakdown */}
-          <div className="pt-4 border-t border-slate-100 space-y-3">
-            <span className="text-xs font-semibold text-slate-700">Urgency & Priority Weight</span>
-            <div className="grid grid-cols-3 gap-3 text-xs">
+          {/* Priority Levels */}
+          <div className="pt-3 border-t border-slate-100">
+            <div className="text-xs font-medium text-slate-700 mb-2.5">Priority Distribution</div>
+            <div className="grid grid-cols-3 gap-3">
               {data?.distribution.byPriority.map((p) => (
                 <div key={p.key} className="p-3 rounded-lg border border-slate-100 bg-slate-50/50">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-slate-700">{p.priority}</span>
-                    <span
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: p.color }}
-                    />
+                    <span className="text-xs font-medium text-slate-700">{p.priority}</span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
                   </div>
-                  <p className="text-lg font-bold text-slate-900 tabular-nums">{p.count}</p>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-base font-bold text-slate-900 tabular-nums">{p.count}</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
                     {overview.totalTasks > 0
-                      ? `${Math.round((p.count / overview.totalTasks) * 100)}% of load`
+                      ? `${Math.round((p.count / overview.totalTasks) * 100)}% of total`
                       : '0%'}
                   </p>
                 </div>
@@ -302,16 +281,16 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Employee Completion Summary */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+        {/* Team Progress */}
+        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h2 className="text-sm font-bold text-slate-900">Workforce Velocity</h2>
-                <p className="text-xs text-slate-500">Per-employee task completion</p>
+                <h2 className="text-sm font-semibold text-slate-900">Team Progress</h2>
+                <p className="text-xs text-slate-500">Individual workload & completion</p>
               </div>
-              <Link to="/admin/employees" className="text-xs text-indigo-600 hover:underline font-semibold">
-                Manage
+              <Link to="/admin/employees" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+                Directory
               </Link>
             </div>
 
@@ -320,25 +299,31 @@ export const AdminDashboard: React.FC = () => {
                 data.employeeSummary.map((emp) => (
                   <div key={emp.id} className="text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-slate-800">{emp.name}</span>
-                      <span className="font-mono text-slate-600 tabular-nums">
-                        {emp.completed}/{emp.totalAssigned} done ({emp.completionRate}%)
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold">
+                          {emp.name.charAt(0)}
+                        </div>
+                        <span className="font-medium text-slate-800">{emp.name}</span>
+                      </div>
+                      <span className="text-slate-500 text-[11px] tabular-nums font-mono">
+                        {emp.completed}/{emp.totalAssigned} done
                       </span>
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
                       <div
                         style={{ width: `${emp.completionRate}%` }}
-                        className="h-full bg-indigo-600 rounded-full"
+                        className="h-full bg-slate-900 rounded-full transition-all duration-300"
                       />
                     </div>
-                    <p className="text-[10px] text-slate-400">
-                      {emp.department} &bull; {emp.inProgress} active
-                    </p>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>{emp.department}</span>
+                      <span className="font-medium text-slate-600">{emp.completionRate}%</span>
+                    </div>
                   </div>
                 ))
               ) : (
                 <div className="py-8 text-center text-xs text-slate-400">
-                  No employee metrics available.
+                  No employee metrics found.
                 </div>
               )}
             </div>
@@ -346,25 +331,25 @@ export const AdminDashboard: React.FC = () => {
 
           <Link
             to="/admin/employees"
-            className="inline-flex items-center justify-center gap-1.5 w-full py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors mt-4"
+            className="inline-flex items-center justify-center gap-1.5 w-full py-2 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors mt-4"
           >
-            <span>View Full Directory</span>
+            <span>Manage Team Directory</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>
 
-      {/* Bottom Row: Recent Tasks & Recent Activity */}
+      {/* Bottom Row: Recent Tasks & Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Tasks */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">
+        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Recently Updated Tasks</h2>
-              <p className="text-xs text-slate-500">Latest pipeline assignments and adjustments</p>
+              <h2 className="text-sm font-semibold text-slate-900">Recent Tasks</h2>
+              <p className="text-xs text-slate-500">Recently assigned or updated tasks</p>
             </div>
-            <Link to="/admin/tasks" className="text-xs text-indigo-600 hover:underline font-semibold">
-              View All Tasks
+            <Link to="/admin/tasks" className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+              View All
             </Link>
           </div>
 
@@ -374,22 +359,22 @@ export const AdminDashboard: React.FC = () => {
                 <div
                   key={t._id}
                   onClick={() => setSelectedTask(t)}
-                  className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/80 px-2 rounded-lg transition-colors"
+                  className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-50/80 px-2 rounded-lg transition-colors group"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono text-[11px] font-semibold text-indigo-600">
+                      <span className="font-mono text-[11px] font-semibold text-slate-500 group-hover:text-indigo-600">
                         {t.taskIdentifier}
                       </span>
                       <PriorityBadge priority={t.priority} size="sm" />
                     </div>
                     <p className="text-xs font-semibold text-slate-900 truncate">{t.title}</p>
                     <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                      Assigned to:{' '}
+                      Assigned to{' '}
                       <span className="text-slate-700 font-medium">
                         {typeof t.assignedTo === 'object' && t.assignedTo !== null
                           ? (t.assignedTo as any).name
-                          : 'Assigned'}
+                          : 'Team'}
                       </span>
                     </p>
                   </div>
@@ -399,17 +384,17 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="py-8 text-center text-xs text-slate-400">No tasks registered yet.</div>
+              <div className="py-8 text-center text-xs text-slate-400">No tasks created yet.</div>
             )}
           </div>
         </div>
 
-        {/* Audit Activity Trail */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">
+        {/* Activity Trail */}
+        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h2 className="text-sm font-bold text-slate-900">System Activity Audit Log</h2>
-              <p className="text-xs text-slate-500">Real-time status transitions and assignments</p>
+              <h2 className="text-sm font-semibold text-slate-900">Recent Activity</h2>
+              <p className="text-xs text-slate-500">Live event audit and status updates</p>
             </div>
             <Activity className="w-4 h-4 text-slate-400" />
           </div>
@@ -418,7 +403,7 @@ export const AdminDashboard: React.FC = () => {
             {data?.recentActivity && data.recentActivity.length > 0 ? (
               data.recentActivity.slice(0, 6).map((act, index) => (
                 <div key={index} className="flex items-start gap-3 text-xs">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-semibold text-slate-800">
@@ -434,11 +419,11 @@ export const AdminDashboard: React.FC = () => {
                     <p className="text-[11px] text-slate-600 mt-0.5 truncate">
                       {act.action}:{' '}
                       <span className="font-medium text-slate-900">
-                        {act.task?.title || 'System Task'}
+                        {act.task?.title || 'Task'}
                       </span>
                     </p>
                     {act.previousStatus && act.newStatus && (
-                      <p className="text-[10px] text-indigo-600 font-mono">
+                      <p className="text-[10px] text-indigo-600 font-mono mt-0.5">
                         {act.previousStatus} &rarr; {act.newStatus}
                       </p>
                     )}
@@ -447,7 +432,7 @@ export const AdminDashboard: React.FC = () => {
               ))
             ) : (
               <div className="py-8 text-center text-xs text-slate-400">
-                No recent activity records logged.
+                No recent activity logged.
               </div>
             )}
           </div>

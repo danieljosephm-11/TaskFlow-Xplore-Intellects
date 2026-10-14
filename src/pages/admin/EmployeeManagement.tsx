@@ -216,21 +216,26 @@ export const EmployeeManagement: React.FC = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            Corporate Employee Management
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Administer employee accounts, department allocations, credentials, and access statuses.
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Team Directory
+            </h1>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+              {pagination.total} members
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage your team members, department assignments, and account permissions.
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors shrink-0 cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.98] rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
         >
           <UserPlus className="w-3.5 h-3.5" />
-          <span>Add New Employee</span>
+          <span>Add Member</span>
         </button>
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, ArrowLeft, CheckCircle2, AlertCircle, Mail, Layers } from 'lucide-react';
+import { Plus, ArrowLeft, CheckCircle2, AlertCircle, Mail } from 'lucide-react';
 import api from '../../services/api.ts';
 import { User, TaskPriority, TaskStatus } from '../../types/client.ts';
 
@@ -57,7 +57,7 @@ export const CreateTask: React.FC = () => {
     }
 
     if (!assignedTo) {
-      setErrorMessage('Please select an active employee to assign this task.');
+      setErrorMessage('Please select a team member to assign this task.');
       return;
     }
 
@@ -90,7 +90,7 @@ export const CreateTask: React.FC = () => {
       }
     } catch (err: any) {
       setErrorMessage(
-        err.response?.data?.message || err.message || 'Error occurred while saving task.'
+        err.response?.data?.message || 'Server error encountered while creating task.'
       );
     } finally {
       setLoading(false);
@@ -98,74 +98,74 @@ export const CreateTask: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
       {/* Top back navigation */}
-      <div className="flex items-center justify-between">
+      <div>
         <button
           onClick={() => navigate('/admin/tasks')}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-900 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to All Tasks</span>
         </button>
       </div>
 
       {/* Header */}
-      <div className="pb-2 border-b border-slate-200">
+      <div className="pb-2 border-b border-slate-200/80">
         <h1 className="text-xl font-bold tracking-tight text-slate-900">
-          Create & Assign Task Order
+          Create New Task
         </h1>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Provision a new enterprise work order, allocate an active employee, and trigger automated notification dispatch.
+        <p className="text-xs text-slate-500 mt-1">
+          Specify task details, assign an owner from your team, and set a target due date.
         </p>
       </div>
 
       {/* Feedback Messages */}
       {successResult && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2 animate-in fade-in">
-          <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>Task {successResult.taskIdentifier} Created Successfully!</span>
+        <div className="p-4 bg-emerald-50 border border-emerald-200/80 rounded-xl space-y-2.5 shadow-2xs animate-in fade-in">
+          <div className="flex items-center gap-2 text-emerald-900 font-semibold text-sm">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Task {successResult.taskIdentifier} created successfully</span>
           </div>
           <p className="text-xs text-emerald-800 leading-relaxed">{successResult.message}</p>
-          <div className="pt-2 flex items-center gap-3">
+          <div className="pt-1 flex items-center gap-3">
             <button
               onClick={() => navigate('/admin/tasks')}
-              className="px-3 py-1.5 text-xs font-semibold bg-emerald-700 text-white rounded-md hover:bg-emerald-800 transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors shadow-xs"
             >
-              View in All Tasks Table
+              View in All Tasks
             </button>
             <button
               onClick={() => setSuccessResult(null)}
               className="text-xs text-emerald-800 font-medium hover:underline"
             >
-              Create Another Task
+              Create another task
             </button>
           </div>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5 text-rose-800 text-xs">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5 text-rose-800 text-xs shadow-2xs">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
           <div className="leading-relaxed">
             <p className="font-semibold">Unable to create task:</p>
-            <p>{errorMessage}</p>
+            <p className="mt-0.5">{errorMessage}</p>
           </div>
         </div>
       )}
 
       {/* Form Container */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs p-6">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.02)] p-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label htmlFor="task-title" className="text-xs font-semibold text-slate-800">
+              <label htmlFor="task-title" className="text-xs font-medium text-slate-700">
                 Task Title <span className="text-rose-500">*</span>
               </label>
-              <span className="text-[11px] text-slate-400 tabular-nums">
-                {title.length}/120 characters
+              <span className="text-[11px] text-slate-400 tabular-nums font-mono">
+                {title.length}/120
               </span>
             </div>
             <input
@@ -175,19 +175,19 @@ export const CreateTask: React.FC = () => {
               maxLength={120}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Integrate OAuth Token Refresh and Redirection Handlers"
-              className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="e.g. Implement OAuth token refresh flow"
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-colors placeholder-slate-400"
             />
           </div>
 
           {/* Description */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label htmlFor="task-desc" className="text-xs font-semibold text-slate-800">
-                Detailed Scope of Work & Deliverables <span className="text-rose-500">*</span>
+              <label htmlFor="task-desc" className="text-xs font-medium text-slate-700">
+                Description & Deliverables <span className="text-rose-500">*</span>
               </label>
-              <span className="text-[11px] text-slate-400 tabular-nums">
-                {description.length}/2000 characters
+              <span className="text-[11px] text-slate-400 tabular-nums font-mono">
+                {description.length}/2000
               </span>
             </div>
             <textarea
@@ -197,16 +197,16 @@ export const CreateTask: React.FC = () => {
               maxLength={2000}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide clear technical specifications, edge-case requirements, and verification criteria for the assignee..."
-              className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 leading-relaxed"
+              placeholder="Provide clear specifications, edge-case criteria, and testing notes..."
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-colors leading-relaxed placeholder-slate-400"
             />
           </div>
 
           {/* Assigned Employee & Priority */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="task-assignee" className="block text-xs font-semibold text-slate-800 mb-1.5">
-                Assign To Employee <span className="text-rose-500">*</span>
+              <label htmlFor="task-assignee" className="block text-xs font-medium text-slate-700 mb-1.5">
+                Assignee <span className="text-rose-500">*</span>
               </label>
               {loadingEmployees ? (
                 <div className="text-xs text-slate-400 py-2">Loading active employees...</div>
@@ -220,11 +220,11 @@ export const CreateTask: React.FC = () => {
                   required
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-colors text-slate-700"
                 >
                   {activeEmployees.map((emp) => (
                     <option key={emp._id} value={emp._id}>
-                      {emp.name} &bull; {emp.department} ({emp.email})
+                      {emp.name} &bull; {emp.department}
                     </option>
                   ))}
                 </select>
@@ -232,18 +232,18 @@ export const CreateTask: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="task-priority" className="block text-xs font-semibold text-slate-800 mb-1.5">
-                Priority Level
+              <label htmlFor="task-priority" className="block text-xs font-medium text-slate-700 mb-1.5">
+                Priority
               </label>
               <select
                 id="task-priority"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-colors text-slate-700"
               >
-                <option value="HIGH">High Priority (Urgent milestone)</option>
-                <option value="MEDIUM">Medium Priority (Standard queue)</option>
-                <option value="LOW">Low Priority (Backlog item)</option>
+                <option value="HIGH">High Priority</option>
+                <option value="MEDIUM">Medium Priority</option>
+                <option value="LOW">Low Priority</option>
               </select>
             </div>
           </div>
@@ -251,63 +251,63 @@ export const CreateTask: React.FC = () => {
           {/* Initial Status & Due Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="task-status" className="block text-xs font-semibold text-slate-800 mb-1.5">
-                Initial Pipeline Status
+              <label htmlFor="task-status" className="block text-xs font-medium text-slate-700 mb-1.5">
+                Initial Status
               </label>
               <select
                 id="task-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TaskStatus)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 transition-colors text-slate-700"
               >
                 <option value="NOT_STARTED">Not Started</option>
-                <option value="PENDING">Pending (Waiting on dependencies)</option>
+                <option value="PENDING">Pending</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="COMPLETED">Completed</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="task-due-date" className="block text-xs font-semibold text-slate-800 mb-1.5">
-                Target Due Date (Optional)
+              <label htmlFor="task-due-date" className="block text-xs font-medium text-slate-700 mb-1.5">
+                Due Date (Optional)
               </label>
               <input
                 id="task-due-date"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-800 bg-white transition-colors text-slate-700"
               />
             </div>
           </div>
 
           {/* Email Notification Notice */}
-          <div className="p-3.5 rounded-lg bg-indigo-50/60 border border-indigo-100 flex items-start gap-2.5 text-xs text-indigo-900">
-            <Mail className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80 flex items-start gap-2.5 text-xs text-slate-600">
+            <Mail className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
             <div className="leading-relaxed">
-              <span className="font-semibold">Automated Notification System:</span>
-              <p className="text-[11px] text-indigo-700 mt-0.5">
-                Upon submission, an official assignment dispatch will be queued and sent via Nodemailer SMTP to the employee's corporate email containing work details and direct portal login link.
+              <span className="font-semibold text-slate-800">Automatic Notification:</span>
+              <p className="text-[11px] text-slate-500 mt-0.5">
+                The assigned team member will receive an email notification with direct portal link and task details.
               </p>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={() => navigate('/admin/tasks')}
-              className="px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              className="px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || activeEmployees.length === 0}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 active:scale-[0.98] rounded-lg shadow-xs transition-all disabled:opacity-50 cursor-pointer"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>{loading ? 'Creating & Dispatching...' : 'Create & Assign Task'}</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>{loading ? 'Creating Task...' : 'Create Task'}</span>
             </button>
           </div>
         </form>

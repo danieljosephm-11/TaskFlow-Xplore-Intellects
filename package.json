@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx server.ts",
+    "dev": "bun server.ts",
     "build": "vite build",
-    "start": "tsx server.ts",
-    "seed": "tsx server/scripts/seed.ts",
+    "start": "bun server.ts",
+    "seed": "bun server/scripts/seed.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

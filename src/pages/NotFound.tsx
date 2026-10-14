@@ -13,29 +13,29 @@ export const NotFound: React.FC = () => {
     : '/employee/dashboard';
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-slate-200 p-8 text-center space-y-5 animate-in fade-in">
-        <div className="w-14 h-14 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center mx-auto">
-          <FileQuestion className="w-7 h-7" />
+    <div className="min-h-screen bg-slate-50 bg-grid-pattern flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200/90 p-8 text-center space-y-5 animate-in fade-in">
+        <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center mx-auto">
+          <FileQuestion className="w-6 h-6" />
         </div>
 
         <div>
-          <span className="font-mono text-xs font-semibold text-indigo-600 tracking-wider uppercase">
-            HTTP 404 Not Found
+          <span className="font-mono text-xs font-semibold text-slate-500 tracking-wider uppercase">
+            404 Error
           </span>
-          <h1 className="text-xl font-bold text-slate-900 mt-1">Page Not Located</h1>
-          <p className="text-xs text-slate-600 mt-2 leading-relaxed">
-            The resource, route, or document requested does not exist in the TaskFlow system.
+          <h1 className="text-xl font-bold text-slate-900 mt-1">Page Not Found</h1>
+          <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+            The page you're looking for doesn't exist or may have been moved.
           </p>
         </div>
 
         <div className="pt-2">
           <Link
             to={homeRoute}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs transition-all"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to Application</span>
+            <span>Return to Workspace</span>
           </Link>
         </div>
       </div>
